@@ -1,0 +1,239 @@
+import random
+
+gameboard_list = ["_", "_", "_", "_", "_", "_", "_", "_", "_"]
+gameboard_string2 = ""
+user_character = ""
+computer_character = ""
+user_place = 0
+computer_place = 0
+user_win = False
+computer_win = False
+dead_heat = False
+user_score = 0
+computer_score = 0
+
+def choice_person():
+    global user_character
+    global computer_character
+    # Тут мы выбираем персонажа и принтуем его. И персонажа компа соответственно
+    user_character = str(input("Choose X or 0: "))
+    while (user_character != "0") and (user_character != "X"):
+        print("You can choose only X or 0 ")
+        user_character = str(input("Choose X or 0: "))
+    if user_character == "X":
+        computer_character = "0"
+    elif user_character == "0":
+        computer_character = "X"
+    if user_character == "0":
+        x_first_move()
+
+
+def x_first_move():
+# Если юзер выбрал 0, то крестик должен походить первым
+    if "_" in gameboard_list:
+        computer_place = random.randint(1, 9)
+        while gameboard_list[computer_place - 1] != "_":
+            computer_place = random.randint(1, 9)
+        gameboard_list[computer_place - 1] = computer_character
+    choice_place()
+
+def gameboard():
+    global gameboard_string2
+    # Здесь мы превращаем массив из 9 подчёркиваний в красивую 3-рядовую строку
+    gameboard_string = (" ".join(gameboard_list))
+    # Превращаем массив в строку с такими же отступами
+    index = 0
+    gameboard_list_1 = []
+    # создаем новый массив с переносами строк после каждого 3-его елемента
+    for i in gameboard_string:
+        index += 1
+        if index % 6 == 0:
+            gameboard_list_1.append("\n")
+            # После каждого 3-его елемента добавляем отступ
+        else:
+            gameboard_list_1.append(i)
+            # и просто подчёркивания
+    gameboard_string2 = ("".join(gameboard_list_1))
+    # из массива с нужными переносами строк делаем строку
+
+def get_digit():
+    # Проверка на то что юзер ввёл число, а не строку или пустую строку и т.д.
+    user_input = input()
+    if user_input.isdigit() == True:
+        return int(user_input)
+    while user_input.isdigit() == False:
+        user_input = input("Enter correct number: ")
+        if user_input.isdigit() == False:
+            print("Wrongly entered")
+        else:
+            return int(user_input)
+
+def choice_place():
+    global user_place
+    # Функция что делает красивое игровое поле
+    gameboard()
+    print("Choose your place from 1 to 9: ")
+    print(gameboard_string2)
+    # Вывели игровое поле и просим юзера сделать ход
+    user_place = get_digit()
+
+    # Делаем проверку на то, что выбранное место уже не занято
+    while user_place > 9 or user_place < 1:
+        # число вне диапазона не подходит
+        print("This place doesnt exist")
+        gameboard()
+        print("Choose your place from 1 to 9: ")
+        print(gameboard_string2)
+        user_place = get_digit()
+    while gameboard_list[user_place - 1] != "_":
+        # уже занятая позиция не подходит
+        print("You can't take this place")
+        gameboard()
+        print("Choose your place from 1 to 9: ")
+        print(gameboard_string2)
+        user_place = get_digit()
+    # В позитивном случае подчёркивание заменяется персонажем игрока
+    gameboard_list[user_place - 1] = user_character
+    print()
+    is_user_won()
+    return
+
+def computer_take_place():
+    if "_" in gameboard_list:
+        computer_place = random.randint(1, 9)
+        while gameboard_list[computer_place - 1] != "_":
+            computer_place = random.randint(1, 9)
+        gameboard_list[computer_place - 1] = computer_character
+    is_computer_won()
+    return
+
+
+def is_user_won():
+    global user_win
+    # Функция что делает красивое игровое поле
+    gameboard()
+    # делаем проверки на все выигрышные комбинации для игрока
+    if (gameboard_list[0] == gameboard_list[1] == gameboard_list[2] == user_character or
+        gameboard_list[3] == gameboard_list[4] == gameboard_list[5] == user_character or
+        gameboard_list[6] == gameboard_list[7] == gameboard_list[8] == user_character or
+        gameboard_list[0] == gameboard_list[4] == gameboard_list[8] == user_character or
+        gameboard_list[2] == gameboard_list[4] == gameboard_list[6] == user_character or
+        gameboard_list[0] == gameboard_list[3] == gameboard_list[6] == user_character or
+        gameboard_list[1] == gameboard_list[4] == gameboard_list[7] == user_character or
+        gameboard_list[2] == gameboard_list[5] == gameboard_list[8] == user_character):
+        user_win = True
+        launcher_user_win()
+        return
+    computer_take_place()
+
+
+def is_computer_won():
+    global computer_win
+    # Функция что делает красивое игровое поле
+    gameboard()
+    # делаем проверки на все выигрышные комбинации для компъютера
+    global computer_win
+    if (gameboard_list[0] == gameboard_list[1] == gameboard_list[2] == computer_character or
+        gameboard_list[3] == gameboard_list[4] == gameboard_list[5] == computer_character or
+        gameboard_list[6] == gameboard_list[7] == gameboard_list[8] == computer_character or
+        gameboard_list[0] == gameboard_list[4] == gameboard_list[8] == computer_character or
+        gameboard_list[2] == gameboard_list[4] == gameboard_list[6] == computer_character or
+        gameboard_list[0] == gameboard_list[3] == gameboard_list[6] == computer_character or
+        gameboard_list[1] == gameboard_list[4] == gameboard_list[7] == computer_character or
+        gameboard_list[2] == gameboard_list[5] == gameboard_list[8] == computer_character):
+        computer_win = True
+        launcher_computer_win()
+        return
+    is_dead_heat()
+
+
+def is_dead_heat():
+    global dead_heat
+    # делаем проверку на ничью
+    gameboard()
+    if (gameboard_list[0] != "_" and gameboard_list[1] != "_" and gameboard_list[2] != "_" and
+        gameboard_list[3] != "_" and gameboard_list[4] != "_" and gameboard_list[5] != "_" and
+        gameboard_list[6] != "_" and gameboard_list[7] != "_" and gameboard_list[8] != "_"):
+        dead_heat = True
+        launcher_dead_heat()
+        return
+    choice_place()
+
+def get_correct_answer():
+    # Проверка на корректный ввод yes or no
+    user_input = input("yes or no ")
+    if user_input == "yes" or user_input == "no":
+        return user_input
+    while user_input != "yes" or "no":
+        print("You should write 'yes' or 'no'")
+        user_input = input()
+        if user_input == "yes":
+            return user_input
+        if user_input == "no":
+            return user_input
+
+def launcher_user_win():
+    global user_win
+    global user_score
+    global gameboard_list
+    # В этой ф-и зацикливаем игру, если юзер победил
+    if user_win is True:
+        print(gameboard_string2)
+        print("Congratulations, bitch, you won")
+        user_score += 1
+        print("User ", user_score)
+        print("Computer ", computer_score)
+        print("Go eshe raz?")
+        restart = get_correct_answer()
+        if restart == "yes":
+            user_win = False
+            gameboard_list = ["_", "_", "_", "_", "_", "_", "_", "_", "_"]
+            choice_place()
+        if restart == "no":
+            print("Значит выиграл разок и выходишь?")
+            return
+
+def launcher_computer_win():
+    global computer_win
+    global computer_score
+    global gameboard_list
+    # В этой ф-и зацикливаем игру, если юзер победил
+
+    if computer_win is True:
+        print(gameboard_string2)
+        print("I'm sorry, but you fucked up!")
+        computer_score += 1
+        print("User ", user_score)
+        print("Computer ", computer_score)
+        print("Go eshe raz?")
+        restart = get_correct_answer()
+        if restart == "yes":
+            computer_win = False
+            gameboard_list = ["_", "_", "_", "_", "_", "_", "_", "_", "_"]
+            choice_place()
+        if restart == "no":
+            print("Значит проиграл и выходишь? Ну давай")
+            return
+
+def launcher_dead_heat():
+    global dead_heat
+    global gameboard_list
+    # В этой ф-и зацикливаем игру, если юзер победил
+
+    if dead_heat is True:
+        print(gameboard_string2)
+        print("Tut Ebanaya Nichya")
+        print("Go eshe raz?")
+        restart = get_correct_answer()
+        if restart == "yes":
+            dead_heat = False
+            gameboard_list = ["_", "_", "_", "_", "_", "_", "_", "_", "_"]
+            choice_place()
+        if restart == "no":
+            print("Значит закончил на ничье, ну ок")
+            return
+
+
+choice_person()
+
+choice_place()
